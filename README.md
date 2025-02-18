@@ -89,3 +89,58 @@ The difference is its learning size, 0.005, which was chosen empirically.
 
 
 ![poster](https://github.com/zouharvi/pwesuite/assets/7661193/e2539886-30b1-4fbd-b768-ec3a61dfa1ce)
+
+## Development
+### Notes
+- This project has dependencies which determine usable Python 3 versions. That dependency currently is panphon2
+- This project requires local admin or sudo privelges depending on your instituion's priveleges policy and so to install flite, lex_lookup and epitran you may need to follow a workaround. This is detailed below.
+- This project is setup with relative directories to maintain portability, to set the top level directory so imports work you will need to export pwesuite's location to path. This is detailed below.
+- This code is written to work on Linux or MacOS only.
+- Creating your own copy of the data may not be nessecary as you can instead download the data from huggingface.
+
+
+### Development setup
+
+If you are not a developer/contributor already you will have to fork and raise a PR rather than a branch. So follow all steps after the git clone to get setup.
+
+```
+> git clone git@github.com:zouharvi/pwesuite.git
+> cd pwesuite 
+> git branch crazy-feature
+> python -m venv dev-venv
+> source dev-venv/bin/activate
+> pip install -e .
+Congratulations you are now ready to develop in PWESuite.
+```
+### Creating your own copy of the data (with sudo)
+
+If you have sudo privileges this will also configure and install cmu flite as lex_lookup is a required tool. 
+
+```
+> cd pwesuite
+> ./create_dataset/all.sh
+```
+
+### Creating your own copy of the data (without sudo)
+
+If you are on a system without sudo and do not want to build your own Docker container this is a workaround.
+
+```
+> cd pwesuite
+> export NON_ROOT_CUSTOM_INSTALL_DIR=/YOUR_PATH_TO_DIR_HERE
+> ./create_dataset/all.sh
+#! Helpful prompt 
+#! Now you will have a path to the binary for lex_lookup so you need to add it to path
+> export PATH=/YOUR_PATH_TO_LEX_LOOKUP/lex_lookup:$PATH
+
+```
+Please note your export (i.e environment variable) will only be set for the lifetime of the terminal/shell you are in. For all.sh this is not an issue because you only need to set the custom directory while the code is compiled. It would pay to export the path to the lex_lookup binary every time you run anything to do with PWEsuite.
+
+The final export to add lex_lookup to path preprends it so it will be encountered first.
+
+### Setting your python path (if you're getting module not found errors)
+If you have multiple python projects active at once or are doing development sometimes your applications can't find parts of their modules. To fix this issue you just need to set your python path while you're inside an active virtual environment.
+```
+(dev-venv)> export PYTHON_PATH=/YOUR_PATH_TO_PWESUITE/pwesuite 
+```
+voila now the root of the repo is the root of your application namespace and everything should load.
